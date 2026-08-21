@@ -1,0 +1,87 @@
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="app-header">
+  <a class="brand" routerLink="/"><span>F</span>Foundly</a>
+  <nav aria-label="Primary">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+      i.t('home')
+    }}</a
+    ><a routerLink="/explore" routerLinkActive="active">{{ i.t('explore') }}</a>
+    @if (auth.authenticated()) {
+      <a routerLink="/matches" routerLinkActive="active">{{ i.t('matches') }}</a
+      ><a routerLink="/messages" routerLinkActive="active">{{ i.t('messages') }}</a>
+    }
+  </nav>
+  <div class="utilities">
+    <select
+      aria-label="Language"
+      [value]="i.language()"
+      (change)="setLanguage($any($event.target).value)"
+    >
+      <option value="ka">KA</option>
+      <option value="en">EN</option>
+      <option value="ru">RU</option>
+    </select>
+    <button class="icon-button" (click)="toggleTheme()" aria-label="Toggle color theme">
+      <img [src]="dark() ? 'icons/sun.svg' : 'icons/moon.svg'" alt="" />
+    </button>
+    @if (auth.authenticated()) {
+      <a
+        class="icon-button link notification-link"
+        routerLink="/notifications"
+        [attr.aria-label]="i.t('notifications')"
+        ><img src="icons/bell.svg" alt="" />@if(unread()){<span>{{unread()>99?'99+':unread()}}</span>}</a
+      ><a class="profile-link" routerLink="/profile"
+        ><img src="icons/user.svg" alt="" />{{ i.t('profile') }}</a
+      ><button class="text-button" (click)="auth.logout()">{{ i.t('logout') }}</button>
+    } @else {
+      <a class="login-link" routerLink="/login">{{ i.t('login') }}</a
+      ><a class="primary register-link" routerLink="/register">{{ i.t('register') }}</a>
+    }
+    <div class="add-menu">
+      <button class="primary add-trigger" (click)="menu.set(!menu())">
+        <img src="icons/plus.svg" alt="" />{{ i.t('post') }}
+      </button>
+      @if (menu()) {
+        <div class="menu">
+          <a routerLink="/create" [queryParams]="{ type: 'lost' }" (click)="menu.set(false)"
+            ><img src="icons/search.svg" alt="" />{{ i.t('lostItem') }}</a
+          ><a routerLink="/create" [queryParams]="{ type: 'found' }" (click)="menu.set(false)"
+            ><img src="icons/briefcase-business.svg" alt="" />{{ i.t('foundItem') }}</a
+          >
+        </div>
+      }
+    </div>
+  </div>
+</header>
+<main id="main"><router-outlet /></main>
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    ><img src="icons/house.svg" alt="" /><span>{{ i.t('home') }}</span></a
+  ><a routerLink="/explore" routerLinkActive="active"
+    ><img src="icons/compass.svg" alt="" /><span>{{ i.t('explore') }}</span></a
+  ><button class="add" (click)="menu.set(!menu())" [attr.aria-expanded]="menu()">
+    <img src="icons/plus.svg" alt="" /><span>{{ i.t('post') }}</span></button
+  ><a routerLink="/messages" routerLinkActive="active"
+    ><img src="icons/message-circle.svg" alt="" /><span>{{ i.t('messages') }}</span></a
+  ><a [routerLink]="auth.authenticated() ? '/profile' : '/login'" routerLinkActive="active"
+    ><img src="icons/user.svg" alt="" /><span>{{
+      auth.authenticated() ? i.t('profile') : i.t('login')
+    }}</span></a
+  >
+</nav>
+@if (menu()) {
+  <div class="mobile-sheet" role="dialog" aria-modal="true">
+    <button class="sheet-close" (click)="menu.set(false)" aria-label="Close">
+      <img src="icons/x.svg" alt="" />
+    </button>
+    <h2>{{ i.t('post') }}</h2>
+    <a routerLink="/create" [queryParams]="{ type: 'lost' }" (click)="menu.set(false)"
+      ><img src="icons/search.svg" alt="" /><b>{{ i.t('lostItem') }}</b
+      ><span>{{ i.t('lostHelp') }}</span></a
+    ><a routerLink="/create" [queryParams]="{ type: 'found' }" (click)="menu.set(false)"
+      ><img src="icons/briefcase-business.svg" alt="" /><b>{{ i.t('foundItem') }}</b
+      ><span>{{ i.t('foundHelp') }}</span></a
+    >
+  </div>
+  <button class="sheet-backdrop" (click)="menu.set(false)" aria-label="Close"></button>
+}

@@ -1,0 +1,8 @@
+[0;1;32m●[0m postgresql.service - PostgreSQL RDBMS
+     Loaded: loaded (]8;;file://ubuntu/usr/lib/systemd/system/postgresql.service/usr/lib/systemd/system/postgresql.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (exited)[0m since Wed 2026-08-19 06:04:02 UTC; 37s ago
+   Main PID: 4344 (code=exited, status=0/SUCCESS)
+        CPU: 7ms
+
+Aug 19 06:04:02 ubuntu systemd[1]: Starting postgresql.service - PostgreSQL RDBMS...
+Aug 19 06:04:02 ubuntu systemd[1]: Finished postgresql.service - PostgreSQL RDBMS.

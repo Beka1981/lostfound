@@ -1,0 +1,38 @@
+[Unit]
+Description=Lost & Found production API
+After=network-online.target postgresql.service
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=lostfound
+Group=lostfound
+WorkingDirectory=/opt/lostfound/backend/current
+EnvironmentFile=/etc/lostfound/lostfound.env
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+ExecStart=/usr/bin/dotnet /opt/lostfound/backend/current/LostFound.Api.dll
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30
+KillSignal=SIGINT
+SyslogIdentifier=lostfound-api
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/lostfound
+UMask=0027
+LimitNOFILE=16384
+
+[Install]
+WantedBy=multi-user.target

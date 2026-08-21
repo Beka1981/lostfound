@@ -1,0 +1,4 @@
+using LostFound.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+namespace LostFound.Infrastructure.Identity;
+public sealed class ApplicationUser : IdentityUser<Guid> { public AccountType AccountType { get; set; } public string? FirstName { get; set; } public string? LastName { get; set; } public string? OrganizationName { get; set; } public string? ResponsiblePerson { get; set; } public string? IdentificationCiphertext { get; set; } public string? ProfilePhotoKey { get; set; } public string Language { get; set; } = "ka"; public string Theme { get; set; } = "light"; public bool NotificationsEnabled { get; set; } = true; public bool EmailNotificationsEnabled { get; set; } public bool InAppNotificationsEnabled { get; set; } = true; public bool AllowContactSharing { get; set; } public bool IsSuspended { get; set; } public DateTime? SuspendedUntilUtc { get; set; } public bool IsPermanentlyBlocked { get; set; } public string? RestrictionReasonCode { get; set; } }

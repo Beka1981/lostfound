@@ -1,0 +1,22 @@
+.profile-photo {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.profile-photo > img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.file-button {
+  display: inline-flex !important;
+  margin: 0 !important;
+  padding: .65rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.file-button input { position: absolute; left: -9999px; }
+.panel hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--color-border); }

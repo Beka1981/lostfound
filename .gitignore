@@ -1,0 +1,42 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.*.local.json
+*.secrets.json
+secrets.json
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.cer
+/etc/lostfound/lostfound.env
+
+# .NET build and tooling
+**/bin/
+**/obj/
+.vs/
+.idea/
+.tools/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Angular / Node
+**/node_modules/
+src/frontend/dist/
+src/frontend/.angular/
+npm-debug.log*
+yarn-error.log*
+
+# Runtime data and temporary files
+**/uploads/
+*.log
+*.tmp
+*.temp
+.DS_Store
+
+artifacts/releases/

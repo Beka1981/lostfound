@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1/",
+  "title": "LostFoundWeb",
+  "consoleErrors": [
+    "Executing inline event handler violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. The action has been blocked.",
+    "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+    "ERROR fi"
+  ],
+  "failedRequests": [],
+  "body": "Skip to content\nFFoundly\nმთავარიძებნაშეტყობინებები\nKA\nEN\nRU\nგანთავსება\nFOUNDLY\nიპოვე მნიშვნელოვანი.\n\nდაკარგული ნივთების უსაფრთხოდ დაბრუნება.\n\nდაკარგული\nშექმენი საძიებო განცხადება\nნაპოვნი\nდაეხმარე ნივთს პატრონის პოვნაში\nკატეგორიები\nყველას ნახვა\nყველა ნივთი\nელექტრონიკა\nჩანთები\nგასაღებები\nდოკუმენტები\nბოლოს დამატებული\nყველას ნახვა\nმთავარიძებნაგანთავსებაშეტყობინებებიპროფილი"
+}

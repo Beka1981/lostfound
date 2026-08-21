@@ -1,0 +1,17 @@
+using LostFound.Domain.Entities;
+namespace LostFound.Application.Contracts;
+public sealed record PublicProfileResponse(Guid Id,string DisplayName,string? PhotoUrl,decimal? Rating,int RatingCount,int SuccessfulReturns);
+public sealed record PrivateProfileResponse(Guid Id,AccountType AccountType,string? FirstName,string? LastName,string? OrganizationName,string? ResponsiblePerson,string Email,string? PhoneNumber,string? ProfilePhotoUrl,string Language,string Theme,bool NotificationsEnabled,bool EmailNotificationsEnabled,bool InAppNotificationsEnabled,bool AllowContactSharing);
+public sealed record UpdateProfileRequest(string? FirstName,string? LastName,string? OrganizationName,string? ResponsiblePerson,string? PhoneNumber,string Language,string Theme,bool NotificationsEnabled,bool EmailNotificationsEnabled,bool InAppNotificationsEnabled,bool AllowContactSharing);
+public sealed record ChangePasswordRequest(string CurrentPassword,string NewPassword);
+public sealed record RegisterRequest(AccountType AccountType,string Email,string Password,string? FirstName,string? LastName,string? OrganizationName,string? ResponsiblePerson,string? PhoneNumber);
+public sealed record LoginRequest(string Email,string Password);
+public sealed record AuthResponse(string AccessToken,DateTime ExpiresAtUtc,string RefreshToken);
+public sealed record RefreshAccessTokenRequest(string RefreshToken);
+public sealed record ParticipantResponse(Guid UserId,string DisplayName,string? PhotoUrl);
+public sealed record ConversationResponse(Guid Id,Guid? ItemId,string? ItemTitle,IReadOnlyList<ParticipantResponse> Participants,string? LastMessage,DateTime? LastMessageAtUtc,int UnreadCount);
+public sealed record MessageResponse(Guid Id,Guid ConversationId,Guid SenderId,string SenderDisplayName,string Body,DateTime CreatedAtUtc);
+public sealed record SendMessageRequest(string Body);
+public sealed record NotificationResponse(Guid Id,string Type,string PayloadJson,DateTime CreatedAtUtc,DateTime? ReadAtUtc);
+public sealed record RatingRequest(Guid ExchangeId,int Score,string? Review);
+public sealed record ReportRequest(Guid? ItemId,Guid? ReportedUserId,Guid? MessageId,string Reason,string? Details);

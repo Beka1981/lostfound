@@ -1,0 +1,12 @@
+using FluentAssertions; using LostFound.Application.Contracts; using LostFound.Application.Validation;
+namespace LostFound.Tests;
+public sealed class CommunicationSecurityTests{
+ [Fact]public void Public_profile_contract_contains_no_private_contact_or_identification_fields(){var names=typeof(PublicProfileResponse).GetProperties().Select(x=>x.Name);names.Should().NotContain(x=>x.Contains("Email")||x.Contains("Phone")||x.Contains("Identification")||x.Contains("Responsible"));}
+ [Fact]public void Private_profile_contract_still_never_contains_identification_values(){typeof(PrivateProfileResponse).GetProperties().Select(x=>x.Name).Should().NotContain(x=>x.Contains("Identification"));}
+ [Fact]public void Password_change_requires_current_and_strong_new_password(){var result=new ChangePasswordRequestValidator().Validate(new ChangePasswordRequest("","short"));result.IsValid.Should().BeFalse();result.Errors.Select(x=>x.PropertyName).Should().Contain(["CurrentPassword","NewPassword"]);}
+ [Fact]public void Message_body_is_required_and_bounded(){new SendMessageRequestValidator().Validate(new SendMessageRequest("")).IsValid.Should().BeFalse();new SendMessageRequestValidator().Validate(new SendMessageRequest(new string('x',4001))).IsValid.Should().BeFalse();}
+ [Fact]public void Report_requires_exactly_one_target(){var validator=new ReportRequestValidator();validator.Validate(new ReportRequest(null,null,null,"spam",null)).IsValid.Should().BeFalse();validator.Validate(new ReportRequest(Guid.NewGuid(),Guid.NewGuid(),null,"spam",null)).IsValid.Should().BeFalse();validator.Validate(new ReportRequest(Guid.NewGuid(),null,null,"spam",null)).IsValid.Should().BeTrue();}
+ [Fact]public void Rating_contract_does_not_accept_an_arbitrary_reviewee(){typeof(RatingRequest).GetProperties().Select(x=>x.Name).Should().NotContain("RevieweeId");}
+ [Fact]public void Rating_validation_enforces_exchange_score_and_review_limits(){var validator=new RatingRequestValidator();validator.Validate(new RatingRequest(Guid.Empty,0,new string('x',2001))).Errors.Select(x=>x.PropertyName).Should().Contain(["ExchangeId","Score","Review"]);validator.Validate(new RatingRequest(Guid.NewGuid(),5,"Helpful and safe exchange.")).IsValid.Should().BeTrue();}
+ [Fact]public void Public_conversation_contract_does_not_expose_contact_details(){var names=typeof(ParticipantResponse).GetProperties().Select(x=>x.Name);names.Should().NotContain(x=>x.Contains("Email")||x.Contains("Phone")||x.Contains("Contact"));}
+}

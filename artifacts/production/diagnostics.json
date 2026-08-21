@@ -1,0 +1,50 @@
+{
+  "consoleErrors": [],
+  "failedRequests": [],
+  "http5xx": [],
+  "routes": {
+    "/": {
+      "status": true,
+      "heading": true
+    },
+    "/login": {
+      "status": true,
+      "heading": true
+    },
+    "/register": {
+      "status": true,
+      "heading": true
+    },
+    "/forgot-password": {
+      "status": true,
+      "heading": true
+    },
+    "/explore": {
+      "status": true,
+      "heading": true
+    },
+    "/does-not-exist": {
+      "status": true,
+      "heading": true
+    },
+    "/notifications": {
+      "heading": true,
+      "url": "/notifications"
+    },
+    "/matches": {
+      "heading": true,
+      "url": "/matches"
+    },
+    "/messages": {
+      "heading": true,
+      "url": "/messages"
+    },
+    "/profile": {
+      "heading": true,
+      "url": "/profile"
+    }
+  },
+  "refreshStatus": 200,
+  "moderatorAllowed": true,
+  "ordinaryDenied": true
+}

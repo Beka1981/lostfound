@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/backend/">
+    <Project Path="src/backend/LostFound.Api/LostFound.Api.csproj" />
+    <Project Path="src/backend/LostFound.Application/LostFound.Application.csproj" />
+    <Project Path="src/backend/LostFound.Domain/LostFound.Domain.csproj" />
+    <Project Path="src/backend/LostFound.Infrastructure/LostFound.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LostFound.Tests/LostFound.Tests.csproj" />
+  </Folder>
+</Solution>

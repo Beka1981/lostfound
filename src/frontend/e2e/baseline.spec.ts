@@ -1,0 +1,8 @@
+import { test, expect } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+const out='../../artifacts/baseline';
+test.beforeAll(()=>mkdirSync(out,{recursive:true}));
+for(const viewport of [{name:'mobile',width:390,height:844},{name:'tablet',width:768,height:1024},{name:'desktop',width:1440,height:1000}]){
+ test(`deployed Home baseline ${viewport.name}`,async({page})=>{const consoleErrors:string[]=[];const failed:string[]=[];page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText}`));await page.setViewportSize(viewport);await page.goto('/',{waitUntil:'networkidle'});await page.screenshot({path:`${out}/home-${viewport.name}.png`,fullPage:true});writeFileSync(`${out}/home-${viewport.name}.json`,JSON.stringify({url:page.url(),title:await page.title(),consoleErrors,failedRequests:failed,body:(await page.locator('body').innerText()).slice(0,4000)},null,2));await expect(page.locator('body')).toBeVisible()});
+}
+test('deployed missing routes and dead Add baseline',async({page})=>{const results:any[]=[];for(const path of ['/login','/register','/forgot-password']){const errors:string[]=[];page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});await page.goto(path,{waitUntil:'networkidle'});results.push({path,url:page.url(),h1:await page.locator('h1').allTextContents(),errors})}await page.setViewportSize({width:390,height:844});await page.goto('/');await page.locator('.bottom-nav .add').click();await page.waitForTimeout(500);results.push({action:'mobile-add',url:page.url()});writeFileSync(`${out}/runtime.json`,JSON.stringify(results,null,2))});

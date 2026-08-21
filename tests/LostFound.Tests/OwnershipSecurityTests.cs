@@ -1,0 +1,27 @@
+using FluentAssertions;
+using LostFound.Application.Contracts;
+using LostFound.Application.Security;
+using LostFound.Application.Validation;
+using LostFound.Domain.Entities;
+using LostFound.Application.Abstractions;
+using LostFound.Infrastructure.Qr;
+using System.Text;
+
+namespace LostFound.Tests;
+public sealed class OwnershipSecurityTests
+{
+ [Fact]public void Exchange_code_is_always_six_digits_and_preserves_possible_leading_zeroes(){var codes=Enumerable.Range(0,5000).Select(_=>OwnershipSecurity.GenerateSixDigitCode()).ToList();codes.Should().OnlyContain(x=>x.Length==6&&x.All(char.IsDigit));codes.Should().Contain(x=>x[0]=='0');}
+ [Fact]public void Exchange_code_is_hashed_and_verified_in_constant_time_primitive(){const string secret="a-secret-key-long-enough-for-tests";var salt=OwnershipSecurity.GenerateSalt();var hash=OwnershipSecurity.HashExchangeCode("012345",salt,secret);hash.Should().NotContain("012345");OwnershipSecurity.VerifyExchangeCode("012345",salt,secret,hash).Should().BeTrue();OwnershipSecurity.VerifyExchangeCode("012346",salt,secret,hash).Should().BeFalse();}
+ [Fact]public void Reissued_code_salt_invalidates_previous_hash(){const string secret="a-secret-key-long-enough-for-tests";var oldSalt=OwnershipSecurity.GenerateSalt();var newSalt=OwnershipSecurity.GenerateSalt();var hash=OwnershipSecurity.HashExchangeCode("123456",oldSalt,secret);OwnershipSecurity.VerifyExchangeCode("123456",newSalt,secret,hash).Should().BeFalse();}
+ [Fact]public void Qr_tokens_have_256_bits_of_entropy_and_are_unique(){var tokens=Enumerable.Range(0,1000).Select(_=>OwnershipSecurity.GenerateToken()).ToList();tokens.Distinct().Should().HaveCount(tokens.Count);tokens.Should().OnlyContain(x=>x.Length>=43);tokens.Select(OwnershipSecurity.HashQrToken).Distinct().Should().HaveCount(tokens.Count);}
+ [Fact]public void Claim_answers_reject_duplicate_questions_and_unbounded_content(){var id=Guid.NewGuid();var validator=new SubmitClaimAnswersRequestValidator();validator.Validate(new SubmitClaimAnswersRequest([new(id,"one"),new(id,"two")])).IsValid.Should().BeFalse();validator.Validate(new SubmitClaimAnswersRequest([new(Guid.NewGuid(),new string('x',1001))])).IsValid.Should().BeFalse();}
+ [Fact]public void Verification_questions_enforce_sensible_count_order_and_length(){var validator=new SetVerificationQuestionsRequestValidator();validator.Validate(new SetVerificationQuestionsRequest([])).IsValid.Should().BeFalse();validator.Validate(new SetVerificationQuestionsRequest(Enumerable.Range(0,6).Select(x=>$"Question number {x}?").ToList())).IsValid.Should().BeFalse();validator.Validate(new SetVerificationQuestionsRequest(["What unique mark is on the item?"])).IsValid.Should().BeTrue();}
+ [Fact]public void Public_item_and_qr_contracts_expose_no_answers_secrets_or_owner_contact(){var publicNames=typeof(ItemResponse).GetProperties().Concat(typeof(PublicQrResponse).GetProperties()).Select(x=>x.Name);publicNames.Should().NotContain(x=>x.Contains("Answer",StringComparison.OrdinalIgnoreCase)||x.Contains("Hash",StringComparison.OrdinalIgnoreCase)||x.Contains("Token",StringComparison.OrdinalIgnoreCase)||x.Contains("Email",StringComparison.OrdinalIgnoreCase)||x.Contains("Phone",StringComparison.OrdinalIgnoreCase)||x.Contains("OwnerId",StringComparison.OrdinalIgnoreCase));}
+ [Fact]public void Claim_detail_uses_dedicated_private_answer_contract(){typeof(ItemResponse).GetProperties().Select(x=>x.PropertyType).Should().NotContain(typeof(ClaimAnswerResponse));typeof(ClaimDetailResponse).GetProperties().Select(x=>x.Name).Should().Contain("Answers");}
+ [Fact]public void Claim_and_exchange_states_cover_preserved_history_and_terminal_return(){Enum.GetNames<ClaimStatus>().Should().BeEquivalentTo("Pending","UnderReview","Accepted","Rejected","Cancelled","Completed");Enum.GetNames<ExchangeStatus>().Should().BeEquivalentTo("Pending","Ready","Completed","Expired","Cancelled");ItemStatus.Returned.Should().NotBe(ItemStatus.Claimed);}
+ [Fact]public void Qr_management_request_cannot_choose_owner_or_token(){var names=typeof(CreateQrTagRequest).GetProperties().Select(x=>x.Name);names.Should().NotContain(["OwnerId","Token","PublicTokenHash"]);}
+ [Fact]public void Qr_renderer_produces_valid_svg_without_embedding_token_as_text(){var payload="https://foundly.test/qr/very-secret-token";var image=new QrCodeRenderer().Render(payload,QrImageFormat.Svg);image.ContentType.Should().Be("image/svg+xml");var svg=Encoding.UTF8.GetString(image.Content);svg.Should().StartWith("<svg");svg.Should().Contain("viewBox");svg.Should().NotContain("very-secret-token");}
+ [Fact]public void Qr_renderer_produces_a_real_png_with_quiet_zone(){var image=new QrCodeRenderer().Render("https://foundly.test/qr/test-token",QrImageFormat.Png);image.ContentType.Should().Be("image/png");image.Content.Take(8).Should().Equal([137,80,78,71,13,10,26,10]);image.Content.Length.Should().BeGreaterThan(500);}
+ [Fact]public void Qr_renderer_rejects_non_http_payloads(){var action=()=>new QrCodeRenderer().Render("javascript:alert(1)",QrImageFormat.Svg);action.Should().Throw<ArgumentException>();}
+ [Fact]public void Qr_token_match_is_constant_time_and_never_requires_the_stored_hash_to_leave_server(){var token=OwnershipSecurity.GenerateToken();var hash=OwnershipSecurity.HashQrToken(token);OwnershipSecurity.VerifyQrToken(token,hash).Should().BeTrue();OwnershipSecurity.VerifyQrToken(token+"x",hash).Should().BeFalse();typeof(QrTagResponse).GetProperties().Select(x=>x.Name).Should().NotContain(x=>x.Contains("Hash"));}
+}
