@@ -306,6 +306,29 @@ export class LoginPage {
           {{ i.t('ok') }}
         </button>
       </div>
+    </div>
+    <div
+      class="success-modal"
+      *ngIf="duplicateErrorKey"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="registration-error-title"
+      aria-describedby="registration-error-message"
+    >
+      <div class="success-dialog error-dialog">
+        <div class="success-icon error-icon" aria-hidden="true">
+          <svg viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="24"></circle>
+            <path d="M18 18l16 16"></path>
+            <path d="M34 18L18 34"></path>
+          </svg>
+        </div>
+        <h2 id="registration-error-title">{{ i.t('duplicateRegistrationTitle') }}</h2>
+        <p id="registration-error-message">{{ i.t(duplicateErrorKey) }}</p>
+        <button type="button" class="submit success-ok error-ok" autofocus (click)="closeDuplicateError()">
+          {{ i.t('ok') }}
+        </button>
+      </div>
     </div>`,
   styleUrl: './auth.scss',
 })
@@ -323,6 +346,7 @@ export class RegisterPage {
   showConfirm = false;
   termsOpen = false;
   successOpen = false;
+  duplicateErrorKey = '';
   get hasUpper() {
     return /[A-Z]/.test(this.model.password);
   }
@@ -360,6 +384,7 @@ export class RegisterPage {
     return (
       !this.busy &&
       !this.successOpen &&
+      !this.duplicateErrorKey &&
       form.valid &&
       this.visibleRequiredPresent &&
       this.strong &&
@@ -386,12 +411,30 @@ export class RegisterPage {
         this.busy = false;
         const errors = e.error?.errors as Record<string, string[]> | undefined;
         if (errors) {
+          this.duplicateErrorKey = this.duplicateMessageKey(errors);
           for (const [key, value] of Object.entries(errors))
             this.fieldErrors[key.toLowerCase()] = value[0] || this.i.t('registrationFailed');
-          this.error = this.fieldErrors['account'] || '';
+          this.error = this.duplicateErrorKey ? '' : this.fieldErrors['account'] || '';
         } else this.error = this.i.t('registrationFailed');
       },
     });
+  }
+  private duplicateMessageKey(errors: Record<string, string[]>) {
+    const duplicate = /(already|duplicate|registered|exists)/i;
+    for (const [key, messages] of Object.entries(errors)) {
+      const normalizedKey = key.toLowerCase();
+      const text = messages.join(' ');
+      if (normalizedKey === 'email' && (text === 'Unable to register with this email.' || duplicate.test(text)))
+        return 'duplicateEmailMessage';
+      if ((normalizedKey === 'phone' || normalizedKey === 'phonenumber') && duplicate.test(text))
+        return 'duplicatePhoneMessage';
+      if ((normalizedKey === 'account' || normalizedKey === 'user') && duplicate.test(text))
+        return 'duplicateAccountMessage';
+    }
+    return '';
+  }
+  closeDuplicateError() {
+    this.duplicateErrorKey = '';
   }
   continueToLogin() {
     this.router.navigateByUrl('/login');

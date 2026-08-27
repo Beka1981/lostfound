@@ -1007,6 +1007,10 @@ Object.assign(phase3.en, {
   registrationFailed: 'Registration could not be completed. Check the fields and try again.',
   registrationSuccessTitle: 'Registration successful',
   registrationSuccessMessage: 'Your account has been created successfully. Please sign in to continue.',
+  duplicateRegistrationTitle: 'Registration could not be completed',
+  duplicateEmailMessage: 'The provided email address is already registered.',
+  duplicatePhoneMessage: 'The provided mobile number is already registered.',
+  duplicateAccountMessage: 'This user is already registered.',
   ok: 'OK',
 });
 Object.assign(phase3.ka, {
@@ -1033,6 +1037,10 @@ Object.assign(phase3.ka, {
   registrationFailed: 'რეგისტრაცია ვერ დასრულდა. შეამოწმეთ ველები და სცადეთ თავიდან.',
   registrationSuccessTitle: 'რეგისტრაცია წარმატებით დასრულდა',
   registrationSuccessMessage: 'თქვენი ანგარიში წარმატებით შეიქმნა. გასაგრძელებლად გაიარეთ ავტორიზაცია.',
+  duplicateRegistrationTitle: 'რეგისტრაცია ვერ დასრულდა',
+  duplicateEmailMessage: 'მითითებული ელ. ფოსტა უკვე რეგისტრირებულია.',
+  duplicatePhoneMessage: 'მითითებული მობილური ნომერი უკვე რეგისტრირებულია.',
+  duplicateAccountMessage: 'ასეთი მომხმარებელი უკვე რეგისტრირებულია.',
   ok: 'OK',
 });
 Object.assign(phase3.ru, {
@@ -1059,6 +1067,10 @@ Object.assign(phase3.ru, {
   registrationFailed: 'Не удалось завершить регистрацию. Проверьте поля и повторите попытку.',
   registrationSuccessTitle: 'Регистрация прошла успешно',
   registrationSuccessMessage: 'Ваша учётная запись успешно создана. Для продолжения войдите в систему.',
+  duplicateRegistrationTitle: 'Не удалось завершить регистрацию',
+  duplicateEmailMessage: 'Указанный адрес эл. почты уже зарегистрирован.',
+  duplicatePhoneMessage: 'Указанный номер мобильного телефона уже зарегистрирован.',
+  duplicateAccountMessage: 'Такой пользователь уже зарегистрирован.',
   ok: 'OK',
 });
 @Injectable({ providedIn: 'root' })
