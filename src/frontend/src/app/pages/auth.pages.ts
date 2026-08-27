@@ -61,7 +61,7 @@ function problem(error: unknown) {
       </div>
       <p class="error" role="alert" *ngIf="error">{{ error }}</p>
       <button class="submit" [disabled]="busy || form.invalid">
-        {{ busy ? i.t('loading') : i.t('login') }}</button
+        <span class="spinner" *ngIf="busy" aria-hidden="true"></span>{{ i.t('login') }}</button
       ><button class="google" type="button" (click)="googleMessage = true">
         G&nbsp;&nbsp;{{ i.t('continueGoogle') }}
       </button>
@@ -265,7 +265,7 @@ export class LoginPage {
         <p class="error" role="alert" *ngIf="error()">{{ error() }}</p>
         <button class="submit" [disabled]="!canSubmit(form)" [attr.aria-busy]="busy()">
           <span class="spinner" *ngIf="busy()" aria-hidden="true"></span
-          >{{ i.t('createAccount') }}
+          >{{ i.language() === 'ka' ? 'რეგისტრაცია' : i.t('register') }}
         </button>
         <p class="center">
           {{ i.t('haveAccount') }} <a routerLink="/login">{{ i.t('login') }}</a>
