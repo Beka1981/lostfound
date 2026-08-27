@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -195,7 +195,7 @@ export class LoginPage {
         /><small class="field-error" *ngIf="email.invalid && email.touched">{{
           i.t('emailError')
         }}</small
-        ><small class="field-error" *ngIf="fieldErrors['email']">{{ fieldErrors['email'] }}</small
+        ><small class="field-error" *ngIf="fieldErrors()['email']">{{ fieldErrors()['email'] }}</small
         ><label for="registerPhone">{{ i.t('phone') }} *</label
         ><input
           id="registerPhone"
@@ -262,9 +262,9 @@ export class LoginPage {
             </button></span
           ></label
         >
-        <p class="error" role="alert" *ngIf="error">{{ error }}</p>
-        <button class="submit" [disabled]="!canSubmit(form)" [attr.aria-busy]="busy">
-          <span class="spinner" *ngIf="busy" aria-hidden="true"></span
+        <p class="error" role="alert" *ngIf="error()">{{ error() }}</p>
+        <button class="submit" [disabled]="!canSubmit(form)" [attr.aria-busy]="busy()">
+          <span class="spinner" *ngIf="busy()" aria-hidden="true"></span
           >{{ i.t('createAccount') }}
         </button>
         <p class="center">
@@ -287,7 +287,7 @@ export class LoginPage {
     </div>
     <div
       class="success-modal"
-      *ngIf="successOpen"
+      *ngIf="successOpen()"
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-success-title"
@@ -309,7 +309,7 @@ export class LoginPage {
     </div>
     <div
       class="success-modal"
-      *ngIf="duplicateErrorKey"
+      *ngIf="duplicateErrorKey()"
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-error-title"
@@ -324,7 +324,7 @@ export class LoginPage {
           </svg>
         </div>
         <h2 id="registration-error-title">{{ i.t('duplicateRegistrationTitle') }}</h2>
-        <p id="registration-error-message">{{ i.t(duplicateErrorKey) }}</p>
+        <p id="registration-error-message">{{ i.t(duplicateErrorKey()) }}</p>
         <button type="button" class="submit success-ok error-ok" autofocus (click)="closeDuplicateError()">
           {{ i.t('ok') }}
         </button>
@@ -339,14 +339,14 @@ export class RegisterPage {
   model: RegisterModel = { accountType: 0, email: '', password: '', phoneNumber: '' };
   confirm = '';
   terms = false;
-  busy = false;
-  error = '';
-  fieldErrors: Record<string, string> = {};
+  busy = signal(false);
+  error = signal('');
+  fieldErrors = signal<Record<string, string>>({});
   showPassword = false;
   showConfirm = false;
   termsOpen = false;
-  successOpen = false;
-  duplicateErrorKey = '';
+  successOpen = signal(false);
+  duplicateErrorKey = signal('');
   get hasUpper() {
     return /[A-Z]/.test(this.model.password);
   }
@@ -367,8 +367,8 @@ export class RegisterPage {
   }
   setType(type: 0 | 1) {
     this.model.accountType = type;
-    this.error = '';
-    this.fieldErrors = {};
+    this.error.set('');
+    this.fieldErrors.set({});
     if (type === 0) {
       delete this.model.organizationName;
       delete this.model.responsiblePerson;
@@ -382,9 +382,9 @@ export class RegisterPage {
   }
   canSubmit(form: any) {
     return (
-      !this.busy &&
-      !this.successOpen &&
-      !this.duplicateErrorKey &&
+      !this.busy() &&
+      !this.successOpen() &&
+      !this.duplicateErrorKey() &&
       form.valid &&
       this.visibleRequiredPresent &&
       this.strong &&
@@ -394,9 +394,9 @@ export class RegisterPage {
   }
   submit(form: any) {
     if (!this.canSubmit(form)) return;
-    this.busy = true;
-    this.error = '';
-    this.fieldErrors = {};
+    this.busy.set(true);
+    this.error.set('');
+    this.fieldErrors.set({});
     const request = {
       ...this.model,
       email: this.model.email.trim(),
@@ -404,18 +404,20 @@ export class RegisterPage {
     };
     this.auth.register(request).subscribe({
       next: () => {
-        this.busy = false;
-        this.successOpen = true;
+        this.busy.set(false);
+        this.successOpen.set(true);
       },
       error: (e: HttpErrorResponse) => {
-        this.busy = false;
+        this.busy.set(false);
         const errors = e.error?.errors as Record<string, string[]> | undefined;
         if (errors) {
-          this.duplicateErrorKey = this.duplicateMessageKey(errors);
+          this.duplicateErrorKey.set(this.duplicateMessageKey(errors));
+          const fieldErrors: Record<string, string> = {};
           for (const [key, value] of Object.entries(errors))
-            this.fieldErrors[key.toLowerCase()] = value[0] || this.i.t('registrationFailed');
-          this.error = this.duplicateErrorKey ? '' : this.fieldErrors['account'] || '';
-        } else this.error = this.i.t('registrationFailed');
+            fieldErrors[key.toLowerCase()] = value[0] || this.i.t('registrationFailed');
+          this.fieldErrors.set(fieldErrors);
+          this.error.set(this.duplicateErrorKey() ? '' : fieldErrors['account'] || '');
+        } else this.error.set(this.i.t('registrationFailed'));
       },
     });
   }
@@ -426,7 +428,10 @@ export class RegisterPage {
       const text = messages.join(' ');
       if (normalizedKey === 'email' && (text === 'Unable to register with this email.' || duplicate.test(text)))
         return 'duplicateEmailMessage';
-      if ((normalizedKey === 'phone' || normalizedKey === 'phonenumber') && duplicate.test(text))
+      if (
+        (normalizedKey === 'phone' || normalizedKey === 'phonenumber') &&
+        (text === 'Unable to register with this phone number.' || duplicate.test(text))
+      )
         return 'duplicatePhoneMessage';
       if ((normalizedKey === 'account' || normalizedKey === 'user') && duplicate.test(text))
         return 'duplicateAccountMessage';
@@ -434,7 +439,7 @@ export class RegisterPage {
     return '';
   }
   closeDuplicateError() {
-    this.duplicateErrorKey = '';
+    this.duplicateErrorKey.set('');
   }
   continueToLogin() {
     this.router.navigateByUrl('/login');
