@@ -168,11 +168,48 @@ describe('RegisterPage', () => {
     expect(fixture.nativeElement.querySelector('.spinner')).toBeTruthy();
   });
 
+  it('shows the success dialog and waits for OK before navigating to login', async () => {
+    person();
+    const navigate = vi.spyOn(page.router, 'navigateByUrl');
+    page.submit({ valid: true });
+    response.next({});
+    response.complete();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const dialog = fixture.nativeElement.querySelector('.success-modal');
+    expect(dialog).toBeTruthy();
+    expect(dialog.getAttribute('role')).toBe('dialog');
+    expect(dialog.getAttribute('aria-modal')).toBe('true');
+    expect(localStorage.getItem('accessToken')).toBeNull();
+    expect(navigate).not.toHaveBeenCalled();
+
+    fixture.nativeElement.querySelector('.success-ok').click();
+    expect(navigate).toHaveBeenCalledWith('/login');
+  });
+
+  it('does not show the success dialog when registration fails', () => {
+    person();
+    page.submit({ valid: true });
+    response.error({ error: {} });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.success-modal')).toBeFalsy();
+    expect(page.error).toBe(page.i.t('registrationFailed'));
+  });
+
   it('contains correct KA, EN and RU required labels', () => {
     expect(page.i.t('firstNameRequired')).toBe('სახელი სავალდებულოა.');
     page.i.set('en');
     expect(page.i.t('phoneRequired')).toBe('Phone number is required.');
     page.i.set('ru');
     expect(page.i.t('responsiblePersonRequired')).toBe('Ответственное лицо обязательно.');
+  });
+
+  it('localizes registration success text in KA, EN and RU', () => {
+    expect(page.i.t('registrationSuccessTitle')).toBe('რეგისტრაცია წარმატებით დასრულდა');
+    page.i.set('en');
+    expect(page.i.t('registrationSuccessTitle')).toBe('Registration successful');
+    page.i.set('ru');
+    expect(page.i.t('registrationSuccessTitle')).toBe('Регистрация прошла успешно');
   });
 });

@@ -265,7 +265,7 @@ export class LoginPage {
         <p class="error" role="alert" *ngIf="error">{{ error }}</p>
         <button class="submit" [disabled]="!canSubmit(form)" [attr.aria-busy]="busy">
           <span class="spinner" *ngIf="busy" aria-hidden="true"></span
-          >{{ busy ? i.t('registering') : i.t('createAccount') }}
+          >{{ i.t('createAccount') }}
         </button>
         <p class="center">
           {{ i.t('haveAccount') }} <a routerLink="/login">{{ i.t('login') }}</a>
@@ -284,6 +284,28 @@ export class LoginPage {
         <p>{{ i.t('temporaryTerms') }}</p>
         <button type="button" class="submit" (click)="termsOpen = false">{{ i.t('close') }}</button>
       </div>
+    </div>
+    <div
+      class="success-modal"
+      *ngIf="successOpen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="registration-success-title"
+      aria-describedby="registration-success-message"
+    >
+      <div class="success-dialog">
+        <div class="success-icon" aria-hidden="true">
+          <svg viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="24"></circle>
+            <path d="M15 27l7 7 15-16"></path>
+          </svg>
+        </div>
+        <h2 id="registration-success-title">{{ i.t('registrationSuccessTitle') }}</h2>
+        <p id="registration-success-message">{{ i.t('registrationSuccessMessage') }}</p>
+        <button type="button" class="submit success-ok" autofocus (click)="continueToLogin()">
+          {{ i.t('ok') }}
+        </button>
+      </div>
     </div>`,
   styleUrl: './auth.scss',
 })
@@ -300,6 +322,7 @@ export class RegisterPage {
   showPassword = false;
   showConfirm = false;
   termsOpen = false;
+  successOpen = false;
   get hasUpper() {
     return /[A-Z]/.test(this.model.password);
   }
@@ -336,6 +359,7 @@ export class RegisterPage {
   canSubmit(form: any) {
     return (
       !this.busy &&
+      !this.successOpen &&
       form.valid &&
       this.visibleRequiredPresent &&
       this.strong &&
@@ -354,7 +378,10 @@ export class RegisterPage {
       phoneNumber: this.model.phoneNumber?.trim(),
     };
     this.auth.register(request).subscribe({
-      next: () => this.router.navigateByUrl('/'),
+      next: () => {
+        this.busy = false;
+        this.successOpen = true;
+      },
       error: (e: HttpErrorResponse) => {
         this.busy = false;
         const errors = e.error?.errors as Record<string, string[]> | undefined;
@@ -365,6 +392,9 @@ export class RegisterPage {
         } else this.error = this.i.t('registrationFailed');
       },
     });
+  }
+  continueToLogin() {
+    this.router.navigateByUrl('/login');
   }
 }
 

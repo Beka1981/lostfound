@@ -187,7 +187,7 @@ const phase3: Record<Language, Record<string, string>> = {
     lastName: 'გვარი',
     organization: 'ორგანიზაცია',
     responsible: 'პასუხისმგებელი პირი',
-    email: 'ელფოსტა',
+    email: 'ელ. ფოსტა',
     phone: 'ტელეფონი',
     save: 'ცვლილებების შენახვა',
     settings: 'პარამეტრები',
@@ -570,7 +570,7 @@ Object.assign(phase3.ka, {
   login: 'შესვლა',
   register: 'ანგარიშის შექმნა',
   noAccount: 'ახალი ხართ Foundly-ზე?',
-  email: 'ელფოსტა',
+  email: 'ელ. ფოსტა',
   password: 'პაროლი',
   showPassword: 'პაროლის ჩვენება ან დამალვა',
   rememberMe: 'დამახსოვრება',
@@ -1005,6 +1005,9 @@ Object.assign(phase3.en, {
   close: 'Close',
   registering: 'Creating account…',
   registrationFailed: 'Registration could not be completed. Check the fields and try again.',
+  registrationSuccessTitle: 'Registration successful',
+  registrationSuccessMessage: 'Your account has been created successfully. Please sign in to continue.',
+  ok: 'OK',
 });
 Object.assign(phase3.ka, {
   accountType: 'ანგარიშის ტიპი',
@@ -1012,7 +1015,7 @@ Object.assign(phase3.ka, {
   lastNameRequired: 'გვარი სავალდებულოა.',
   organizationNameRequired: 'ორგანიზაციის სახელწოდება სავალდებულოა.',
   responsiblePersonRequired: 'პასუხისმგებელი პირი სავალდებულოა.',
-  emailError: 'შეიყვანეთ სწორი ელფოსტის მისამართი.',
+  emailError: 'შეიყვანეთ სწორი ელ. ფოსტის მისამართი.',
   phoneRequired: 'ტელეფონის ნომერი სავალდებულოა.',
   passwordRequirements: 'პაროლის მოთხოვნები',
   passwordLength: 'მინიმუმ 8 სიმბოლო',
@@ -1028,6 +1031,9 @@ Object.assign(phase3.ka, {
   close: 'დახურვა',
   registering: 'ანგარიში იქმნება…',
   registrationFailed: 'რეგისტრაცია ვერ დასრულდა. შეამოწმეთ ველები და სცადეთ თავიდან.',
+  registrationSuccessTitle: 'რეგისტრაცია წარმატებით დასრულდა',
+  registrationSuccessMessage: 'თქვენი ანგარიში წარმატებით შეიქმნა. გასაგრძელებლად გაიარეთ ავტორიზაცია.',
+  ok: 'OK',
 });
 Object.assign(phase3.ru, {
   accountType: 'Тип аккаунта',
@@ -1051,6 +1057,9 @@ Object.assign(phase3.ru, {
   close: 'Закрыть',
   registering: 'Создание аккаунта…',
   registrationFailed: 'Не удалось завершить регистрацию. Проверьте поля и повторите попытку.',
+  registrationSuccessTitle: 'Регистрация прошла успешно',
+  registrationSuccessMessage: 'Ваша учётная запись успешно создана. Для продолжения войдите в систему.',
+  ok: 'OK',
 });
 @Injectable({ providedIn: 'root' })
 export class I18nService {
